@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield India - Scam Prevention & Awareness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #030b2e;
+            --accent: #00f2ff;
+            --secondary: #0a1955;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--primary);
+            color: white;
+        }
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .neon-glow {
+            text-shadow: 0 0 10px var(--accent);
+        }
+        .cyber-border {
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+        }
+        .loading {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .grid-pattern {
+            background-image: radial-gradient(var(--accent) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-[var(--secondary)] p-4 fixed w-full top-0 z-50">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="orbitron text-2xl font-bold text-[var(--accent)] neon-glow">
+                    CyberShield India
+                </h1>
+                <button @click="mobileMenu = !mobileMenu" class="lg:hidden text-white">
+                    <i class="bi bi-list text-2xl"></i>
+                </button>
+                <div class="hidden lg:flex space-x-6">
+                    <a v-for="item in menuItems" :key="item.id" 
+                       :href="item.href" 
+                       class="text-white hover:text-[var(--accent)] transition duration-300">
+                        {{ item.text }}
+                    </a>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div v-if="mobileMenu" class="lg:hidden absolute top-16 left-0 w-full bg-[var(--secondary)] p-4">
+                <a v-for="item in menuItems" :key="item.id"
+                   :href="item.href"
+                   class="block py-2 text-white hover:text-[var(--accent)] transition duration-300">
+                    {{ item.text }}
+                </a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="pt-24 pb-12 px-4 grid-pattern">
+            <div class="container mx-auto text-center">
+                <h1 class="orbitron text-4xl md:text-6xl font-bold mb-6 text-[var(--accent)] neon-glow">
+                    Protect Yourself from Cyber Scams
+                </h1>
+                <p class="text-lg mb-8 max-w-2xl mx-auto">
+                    Stay informed about the latest cyber threats and scams in India. 
+                    Our AI-powered tools and real-time alerts help keep you safe online.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button @click="activeSection = 'phishing'" 
+                            class="cyber-border bg-[var(--secondary)] px-6 py-3 rounded-lg hover:bg-[var(--accent)] hover:text-black transition duration-300">
+                        Check Website Safety
+                    </button>
+                    <button @click="activeSection = 'report'" 
+                            class="cyber-border bg-[var(--secondary)] px-6 py-3 rounded-lg hover:bg-[var(--accent)] hover:text-black transition duration-300">
+                        Report a Scam
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Phishing Detection Tool -->
+            <section v-if="activeSection === 'phishing'" class="mb-12">
+                <h2 class="orbitron text-2xl mb-6 text-[var(--accent)]">Website Safety Checker</h2>
+                <div class="cyber-border p-6 rounded-lg bg-[var(--secondary)]">
+                    <input v-model="urlToCheck" 
+                           type="url" 
+                           placeholder="Enter website URL to check" 
+                           class="w-full p-3 mb-4 rounded bg-[var(--primary)] text-white border border-[var(--accent)]">
+                    <button @click="checkWebsite" 
+                            class="w-full md:w-auto px-6 py-3 bg-[var(--accent)] text-black rounded hover:opacity-90 transition duration-300">
+                        <span v-if="!checking">Check Now</span>
+                        <div v-else class="loading mx-auto"></div>
+                    </button>
+                    <div v-if="checkResult" class="mt-4" :class="{'text-green-400': checkResult.safe, 'text-red-400': !checkResult.safe}">
+                        {{ checkResult.message }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scam Report Form -->
+            <section v-if="activeSection === 'report'" class="mb-12">
+                <h2 class="orbitron text-2xl mb-6 text-[var(--accent)]">Report a Scam</h2>
+                <div class="cyber-border p-6 rounded-lg bg-[var(--secondary)]">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input v-model="report.name" type="text" placeholder="Your Name" 
+                               class="p-3 rounded bg-[var(--primary)] text-white border border-[var(--accent)]">
+                        <input v-model="report.email" type="email" placeholder="Your Email" 
+                               class="p-3 rounded bg-[var(--primary)] text-white border border-[var(--accent)]">
+                    </div>
+                    <select v-model="report.type" 
+                            class="w-full p-3 mb-4 rounded bg-[var(--primary)] text-white border border-[var(--accent)]">
+                        <option value="">Select Scam Type</option>
+                        <option v-for="type in scamTypes" :key="type" :value="type">{{ type }}</option>
+                    </select>
+                    <textarea v-model="report.description" 
+                              placeholder="Describe the scam in detail" 
+                              class="w-full p-3 mb-4 rounded bg-[var(--primary)] text-white border border-[var(--accent)]" 
+                              rows="4"></textarea>
+                    <button @click="submitReport" 
+                            class="w-full md:w-auto px-6 py-3 bg-[var(--accent)] text-black rounded hover:opacity-90 transition duration-300">
+                        Submit Report
+                    </button>
+                </div>
+            </section>
+
+            <!-- Live Scam Alerts -->
+            <section class="mb-12">
+                <h2 class="orbitron text-2xl mb-6 text-[var(--accent)]">Live Scam Alerts</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div v-for="alert in liveAlerts" :key="alert.id" 
+                         class="cyber-border p-4 rounded-lg bg-[var(--secondary)]">
+                        <div class="flex items-center mb-2">
+                            <i :class="alert.icon" class="text-[var(--accent)] mr-2"></i>
+                            <h3 class="font-bold">{{ alert.title }}</h3>
+                        </div>
+                        <p class="text-sm">{{ alert.description }}</p>
+                        <p class="text-xs text-gray-400 mt-2">{{ alert.time }}</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Chatbot -->
+        <div class="fixed bottom-4 right-4">
+            <button @click="toggleChat" 
+                    class="cyber-border bg-[var(--accent)] text-black p-4 rounded-full hover:opacity-90 transition duration-300">
+                <i class="bi" :class="chatOpen ? 'bi-x-lg' : 'bi-chat-dots-fill'"></i>
+            </button>
+            <div v-if="chatOpen" 
+                 class="absolute bottom-16 right-0 w-80 cyber-border rounded-lg bg-[var(--secondary)] p-4">
+                <div class="h-96 flex flex-col">
+                    <div class="flex-1 overflow-y-auto mb-4">
+                        <div v-for="msg in chatMessages" :key="msg.id" 
+                             :class="{'text-right': msg.sender === 'user'}" class="mb-2">
+                            <span class="inline-block p-2 rounded" 
+                                  :class="msg.sender === 'user' ? 'bg-[var(--accent)] text-black' : 'bg-[var(--primary)]'">
+                                {{ msg.text }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input v-model="chatInput" 
+                               @keyup.enter="sendMessage"
+                               type="text" 
+                               placeholder="Ask about cyber security..." 
+                               class="flex-1 p-2 rounded bg-[var(--primary)] text-white border border-[var(--accent)]">
+                        <button @click="sendMessage" 
+                                class="px-4 bg-[var(--accent)] text-black rounded hover:opacity-90">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    mobileMenu: false,
+                    activeSection: 'phishing',
+                    urlToCheck: '',
+                    checking: false,
+                    checkResult: null,
+                    report: {
+                        name: '',
+                        email: '',
+                        type: '',
+                        description: ''
+                    },
+                    scamTypes: [
+                        'Banking Fraud',
+                        'Job Scam',
+                        'Digital Payment Fraud',
+                        'Identity Theft',
+                        'Social Media Scam',
+                        'Investment Fraud'
+                    ],
+                    liveAlerts: [
+                        {
+                            id: 1,
+                            icon: 'bi bi-bank',
+                            title: 'Banking Scam Alert',
+                            description: 'New phishing campaign targeting major bank customers detected.',
+                            time: '2 minutes ago'
+                        },
+                        {
+                            id: 2,
+                            icon: 'bi bi-phone',
+                            title: 'UPI Fraud Alert',
+                            description: 'Fake UPI payment requests circulating in Delhi NCR.',
+                            time: '15 minutes ago'
+                        },
+                        {
+                            id: 3,
+                            icon: 'bi bi-briefcase',
+                            title: 'Job Scam Warning',
+                            description: 'Fraudulent job offers circulating via SMS in Mumbai region.',
+                            time: '1 hour ago'
+                        }
+                    ],
+                    chatOpen: false,
+                    chatInput: '',
+                    chatMessages: [
+                        {
+                            id: 1,
+                            sender: 'bot',
+                            text: 'Hello! I\'m your CyberShield assistant. How can I help you stay safe online?'
+                        }
+                    ],
+                    menuItems: [
+                        { id: 1, text: 'Home', href: '#' },
+                        { id: 2, text: 'Scam Types', href: '#scam-types' },
+                        { id: 3, text: 'Check Website', href: '#check' },
+                        { id: 4, text: 'Report', href: '#report' },
+                        { id: 5, text: 'Resources', href: '#resources' }
+                    ]
+                }
+            },
+            methods: {
+                async checkWebsite() {
+                    if (!this.urlToCheck) return;
+                    
+                    this.checking = true;
+                    try {
+                        // Simulate API call
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        this.checkResult = {
+                            safe: Math.random() > 0.3,
+                            message: Math.random() > 0.3 ? 
+                                '✅ This website appears to be safe.' : 
+                                '⚠️ Warning: This website shows signs of being potentially malicious.'
+                        };
+                    } finally {
+                        this.checking = false;
+                    }
+                },
+                async submitReport() {
+                    if (!this.report.name || !this.report.email || !this.report.type || !this.report.description) {
+                        alert('Please fill all fields');
+                        return;
+                    }
+
+                    try {
+                        const requestBody = {
+                            appSlug: "cybershield-123456",
+                            action: "create",
+                            collection: "scam-reports",
+                            data: {
+                                ...this.report,
+                                timestamp: new Date().toISOString()
+                            }
+                        };
+
+                        const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/mongodb', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer G8HaZypwnwhBPfqhOVZrbh8Ec2C2',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestBody)
+                        });
+
+                        if (response.ok) {
+                            alert('Report submitted successfully!');
+                            this.report = {
+                                name: '',
+                                email: '',
+                                type: '',
+                                description: ''
+                            };
+                        } else {
+                            throw new Error('Failed to submit report');
+                        }
+                    } catch (error) {
+                        alert('Error submitting report. Please try again.');
+                        console.error('Error:', error);
+                    }
+                },
+                toggleChat() {
+                    this.chatOpen = !this.chatOpen;
+                },
+                async sendMessage() {
+                    if (!this.chatInput.trim()) return;
+
+                    const userMessage = {
+                        id: this.chatMessages.length + 1,
+                        sender: 'user',
+                        text: this.chatInput
+                    };
+                    this.chatMessages.push(userMessage);
+                    const userQuestion = this.chatInput;
+                    this.chatInput = '';
+
+                    try {
+                        const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer G8HaZypwnwhBPfqhOVZrbh8Ec2C2',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                messages: [
+                                    {
+                                        role: "user",
+                                        content: [
+                                            {
+                                                type: "text",
+                                                text: `As a cybersecurity expert, please answer this question about online safety: ${userQuestion}`
+                                            }
+                                        ]
+                                    }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        this.chatMessages.push({
+                            id: this.chatMessages.length + 1,
+                            sender: 'bot',
+                            text: data.message
+                        });
+                    } catch (error) {
+                        this.chatMessages.push({
+                            id: this.chatMessages.length + 1,
+                            sender: 'bot',
+                            text: 'Sorry, I encountered an error. Please try again.'
+                        });
+                    }
+                }
+            }
+        }).mount('#app')
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
